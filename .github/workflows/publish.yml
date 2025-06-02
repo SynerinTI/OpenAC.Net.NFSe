@@ -26,6 +26,7 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
+        working-directory: src\OpenAC.Net.NFSe
 
       - name: Extract version from tag
         id: get_version
@@ -33,16 +34,20 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
           echo "Using version: $VERSION"
+        working-directory: src\OpenAC.Net.NFSe
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
+        working-directory: src\OpenAC.Net.NFSe
 
       - name: Pack NuGet package
         run: dotnet pack --configuration Release --no-build \
             -p:PackageVersion=$PACKAGE_VERSION \
             -o ./artifacts
+        working-directory: src\OpenAC.Net.NFSe
 
       - name: Publish to NuGet
         run: dotnet nuget push ./artifacts/*.nupkg \
           --api-key ${{ secrets.NUGET_API_KEY }} \
           --source https://api.nuget.org/v3/index.json
+        working-directory: src\OpenAC.Net.NFSe
