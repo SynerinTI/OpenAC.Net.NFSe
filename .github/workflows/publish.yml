@@ -1,9 +1,9 @@
-name: Build and Publish NuGet Package
+name: Publish NuGet Package
 
 on:
   push:
-    branches:
-      - main  # Trigger only on PR merges to main
+    tags:
+      - 'v*'  # Trigger only on tags like v1.2.3
 
 jobs:
   publish:
@@ -16,26 +16,23 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'  # adjust to your project
+          dotnet-version: '8.0.x'
 
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Calculate Version
-        id: version
+      - name: Extract version from tag
+        id: get_version
         run: |
-          DATE=$(date +'%Y%m%d')
-          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-8)
-          VERSION="1.0.$DATE.$SHORT_SHA"
+          VERSION=${GITHUB_REF#refs/tags/v}
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
-          echo "Calculated version: $VERSION"
+          echo "Using version: $VERSION"
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
       - name: Pack NuGet package
-        run: |
-          dotnet pack --configuration Release --no-build \
+        run: dotnet pack --configuration Release --no-build \
             -p:PackageVersion=$PACKAGE_VERSION \
             -o ./artifacts
 
