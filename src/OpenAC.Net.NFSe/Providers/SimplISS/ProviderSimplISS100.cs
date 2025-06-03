@@ -172,7 +172,9 @@ internal sealed class ProviderSimplISS100 : ProviderABRASF
                 nota.IdentificacaoNFSe.DataEmissao = dataEmissao;
                 nota.XmlOriginal = compNfse.AsString();
             }
+            
         }
+        retornoWebservice.Notas = [.. notas];
     }
 
     protected override void TratarRetornoConsultarNFSeRps(RetornoConsultarNFSeRps retornoWebservice, NotaServicoCollection notas)
